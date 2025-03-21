@@ -133,32 +133,6 @@ export function MovieDetails({ movie, onBack }: MovieDetailsProps) {
               </p>
             </CardContent>
           </Card>
-
-          {/* Reparto Principal */}
-          {movie.credits?.cast?.length > 0 && (
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Reparto Principal</h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {movie.credits.cast.slice(0, 6).map(actor => (
-                  <div key={actor.id} className="flex items-center gap-3">
-                    <div className="h-12 w-12 rounded-full bg-muted overflow-hidden">
-                      {actor.profile_path && (
-                        <img
-                          src={getImageUrl(actor.profile_path, posterSizes.small)}
-                          alt={actor.name}
-                          className="object-cover h-full w-full"
-                        />
-                      )}
-                    </div>
-                    <div>
-                      <p className="font-medium">{actor.name}</p>
-                      <p className="text-sm text-muted-foreground">{actor.character}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Sidebar */}
