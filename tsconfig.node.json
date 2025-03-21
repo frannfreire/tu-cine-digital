@@ -5,16 +5,14 @@
     "lib": ["ES2023"],
     "module": "ESNext",
     "skipLibCheck": true,
-
-    /* Bundler mode */
     "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "moduleDetection": "force",
-    "composite": true, // Enable composite for project references
-    "noEmit": false,   // Allow emitting files
-
-    /* Linting */
+    "composite": true,
+    "noEmit": false, // Ensure this is set to false
+    // Remove or adjust the following line
+    // "allowImportingTsExtensions": true,
+    "emitDeclarationOnly": true, // Optional: Set this if you need declarations only
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,

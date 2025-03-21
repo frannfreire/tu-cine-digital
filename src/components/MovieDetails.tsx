@@ -136,39 +136,28 @@ export function MovieDetails({ movie, onBack }: MovieDetailsProps) {
 
           {/* Reparto Principal */}
           {movie.credits?.cast?.length > 0 && (
-            <Card className="border border-border/30 bg-card shadow-md hover:shadow-lg transition-shadow overflow-hidden">
-              <div className="bg-primary/10 py-4 px-6 border-b border-border/20">
-                <h2 className="text-xl font-bold flex items-center gap-2">
-                  <Users className="h-5 w-5 text-primary" />
-                  Reparto Principal
-                </h2>
-              </div>
-              <CardContent className="p-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {movie.credits.cast.slice(0, 6).map(actor => (
-                    <div key={actor.id} className="flex items-center gap-4 p-4 bg-card hover:bg-accent/5 rounded-xl border border-border/30 transition-colors group">
-                      <div className="h-16 w-16 rounded-full overflow-hidden border-2 border-primary/20 group-hover:border-primary/40 transition-colors">
-                        {actor.profile_path ? (
-                          <img
-                            src={getImageUrl(actor.profile_path, posterSizes.small)}
-                            alt={actor.name}
-                            className="object-cover h-full w-full"
-                          />
-                        ) : (
-                          <div className="h-full w-full flex items-center justify-center bg-primary/10 text-primary font-bold">
-                            {actor.name.charAt(0)}
-                          </div>
-                        )}
-                      </div>
-                      <div>
-                        <p className="font-semibold text-base group-hover:text-primary transition-colors">{actor.name}</p>
-                        <p className="text-sm text-muted-foreground">{actor.character}</p>
-                      </div>
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Reparto Principal</h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {movie.credits.cast.slice(0, 6).map(actor => (
+                  <div key={actor.id} className="flex items-center gap-3">
+                    <div className="h-12 w-12 rounded-full bg-muted overflow-hidden">
+                      {actor.profile_path && (
+                        <img
+                          src={getImageUrl(actor.profile_path, posterSizes.small)}
+                          alt={actor.name}
+                          className="object-cover h-full w-full"
+                        />
+                      )}
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                    <div>
+                      <p className="font-medium">{actor.name}</p>
+                      <p className="text-sm text-muted-foreground">{actor.character}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
         </div>
 
@@ -268,30 +257,17 @@ export function MovieDetails({ movie, onBack }: MovieDetailsProps) {
               </div>
               <CardContent className="p-6 space-y-4">
                 {movie.production_companies?.length > 0 && (
-                  <div>
-                    <h3 className="text-sm text-muted-foreground mb-2">Compañías</h3>
-                    <div className="space-y-2">
-                      {movie.production_companies.slice(0, 3).map(company => (
-                        <div key={company.id} className="text-sm">
-                          {company.name}
-                        </div>
-                      ))}
-                    </div>
+                  <div key={company.id} className="flex items-center gap-2">
+                    {company.logo_path && (
+                      <img
+                        src={getImageUrl(company.logo_path, posterSizes.small)}
+                        alt={company.name}
+                        className="h-8 w-auto"
+                      />
+                    )}
+                    <span>{company.name}</span>
                   </div>
-                )}
-
-                {movie.production_countries?.length > 0 && (
-                  <div>
-                    <h3 className="text-sm text-muted-foreground mb-2">Países</h3>
-                    <div className="space-y-2">
-                      {movie.production_countries.map(country => (
-                        <div key={country.iso_3166_1} className="text-sm">
-                          {country.name}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                ))}
               </CardContent>
             </Card>
           )}

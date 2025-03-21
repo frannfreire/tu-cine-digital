@@ -147,8 +147,8 @@ export async function searchMovies(query: string, page = 1): Promise<{ results: 
 // Función para obtener recomendaciones personalizadas basadas en géneros y películas favoritas
 export async function getPersonalizedRecommendations(
   favoriteGenres: number[] = [], 
-  favoriteMovies: number[] = [],
-  mood: "happy" | "sad" | "excited" | "relaxed" = "relaxed"
+  favoriteMovies: number[] = []
+  // Remove mood if not used
 ): Promise<{ results: Movie[] }> {
   // Si tenemos películas favoritas, obtenemos recomendaciones basadas en ellas
   if (favoriteMovies.length > 0) {
