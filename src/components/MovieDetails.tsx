@@ -250,13 +250,13 @@ export function MovieDetails({ movie, onBack }: MovieDetailsProps) {
           </Card>
 
           {/* Información de producción */}
-          {(movie.production_companies?.length > 0 || movie.production_countries?.length > 0) && (
+          {movie.production_companies?.length > 0 && (
             <Card className="border border-border/30 bg-card shadow-md">
               <div className="bg-primary/10 py-4 px-6 border-b border-border/20">
                 <h2 className="text-xl font-bold">Producción</h2>
               </div>
               <CardContent className="p-6 space-y-4">
-                {movie.production_companies?.length > 0 && (
+                {movie.production_companies.map(company => (
                   <div key={company.id} className="flex items-center gap-2">
                     {company.logo_path && (
                       <img
