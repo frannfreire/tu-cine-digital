@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { Clock, Calendar, Star, ArrowLeft, Heart, DollarSign, Users, BookOpen } from "lucide-react";
+import { Clock, Calendar, Star, ArrowLeft, Heart, DollarSign, BookOpen } from "lucide-react"; // Removed 'Users'
 
 interface MovieDetailsProps {
   movie: MovieDetailsType;

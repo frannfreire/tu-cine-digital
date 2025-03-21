@@ -86,6 +86,7 @@ export interface MovieDetails extends Movie {
   production_companies: { id: number; name: string; logo_path: string }[];
   credits?: Credits;
   videos?: Videos;
+  vote_count: number; // Add this line
 }
 
 // Tipos para géneros
