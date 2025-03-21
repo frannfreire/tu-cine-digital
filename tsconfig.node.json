@@ -11,7 +11,8 @@
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "moduleDetection": "force",
-    "noEmit": true,
+    "composite": true, // Enable composite for project references
+    "noEmit": false,   // Allow emitting files
 
     /* Linting */
     "strict": true,
