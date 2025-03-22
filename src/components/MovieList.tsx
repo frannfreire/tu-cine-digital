@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { fetchPopularMovies, fetchTrendingMovies, searchMovies, getImageUrl, posterSizes, Movie } from "../lib/tmdb";
 import { Search, Star, Film, TrendingUp } from "lucide-react";
+import { MovieGridSkeleton } from "@/components/MovieGridSkeleton";
+import { RecommendedMovies } from "@/components/RecommendedMovies";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface MovieListProps {
   onMovieSelect: (movieId: number) => void;
@@ -93,8 +96,11 @@ export function MovieList({ onMovieSelect }: MovieListProps) {
 
       {/* Content Section */}
       <div className="container mx-auto px-4 py-12 -mt-16 relative z-20">
+        {/* Recommended Movies Section */}
+        <RecommendedMovies onMovieSelect={onMovieSelect} />
+        
         {/* Tabs */}
-        <div className="flex justify-center mb-12">
+        <div className="flex justify-center mb-12 mt-12">
           <div className="inline-flex bg-white/5 backdrop-blur-md rounded-full p-1">
             <button
               onClick={() => setActiveTab("popular")}
@@ -122,9 +128,7 @@ export function MovieList({ onMovieSelect }: MovieListProps) {
         </div>
 
         {isLoading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-          </div>
+          <MovieGridSkeleton count={15} />
         ) : movies.length === 0 ? (
           <div className="text-center text-gray-400 py-12">
             <p className="text-xl">No se encontraron películas</p>

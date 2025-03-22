@@ -1,13 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MovieDetails } from "./components/MovieDetails";
 import { MovieList } from "./components/MovieList";
 import { fetchMovieDetails, MovieDetails as MovieDetailsType } from "./lib/tmdb";
 import { X } from "lucide-react";
 import { Button } from "./components/ui/button";
+import { useLocation } from "react-router-dom";
 
 function App() {
   const [selectedMovie, setSelectedMovie] = useState<MovieDetailsType | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const location = useLocation();
 
   const handleMovieSelect = async (movieId: number) => {
     setIsLoading(true);
@@ -20,6 +22,16 @@ function App() {
       setIsLoading(false);
     }
   };
+  
+  // Cargar película desde URL si viene de la página de recomendaciones
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const movieId = searchParams.get('movieId');
+    
+    if (movieId && !selectedMovie) {
+      handleMovieSelect(parseInt(movieId));
+    }
+  }, [location.search]);
 
   const handleBack = () => {
     setSelectedMovie(null);
