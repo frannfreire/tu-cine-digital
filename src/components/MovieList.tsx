@@ -3,7 +3,6 @@ import { fetchPopularMovies, fetchTrendingMovies, searchMovies, getImageUrl, pos
 import { Search, Star, Film, TrendingUp } from "lucide-react";
 import { MovieGridSkeleton } from "@/components/MovieGridSkeleton";
 import { RecommendedMovies } from "@/components/RecommendedMovies";
-import { useAuth } from "@/contexts/AuthContext";
 
 interface MovieListProps {
   onMovieSelect: (movieId: number) => void;

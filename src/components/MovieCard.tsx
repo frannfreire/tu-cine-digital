@@ -8,7 +8,6 @@ import { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { addFavoriteMovie, removeFavoriteMovie } from "../lib/supabase";
 import { useEffect } from "react";
-import { getFavoriteMovies } from "../lib/supabase";
 
 interface MovieCardProps {
   movie: Movie;

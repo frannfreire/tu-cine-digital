@@ -2,13 +2,12 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { supabase } from '../lib/supabase';
 import { FavoriteGenresSection } from '../components/FavoriteGenresSection';
 import { FavoriteGenresList } from '../components/FavoriteGenresList';
 import { getFavoriteMovies } from '../lib/supabase';
-import { fetchMovieGenres, Genre } from '../lib/tmdb';
-import { CheckCircle, Film } from 'lucide-react';
+import { CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export function ProfilePage() {
