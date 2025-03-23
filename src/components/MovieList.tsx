@@ -4,6 +4,7 @@ import { Search, Star, Film, TrendingUp } from "lucide-react";
 import { MovieGridSkeleton } from "@/components/MovieGridSkeleton";
 import { RecommendedMovies } from "@/components/RecommendedMovies";
 import { SparklesText } from "@/components/ui/sparkles-text"
+import { BeamsBackground } from "@/components/ui/beams-background"
 
 interface MovieListProps {
   onMovieSelect: (movieId: number) => void;
@@ -58,11 +59,7 @@ export function MovieList({ onMovieSelect }: MovieListProps) {
         <div className="absolute inset-0 bg-black/60 z-10"></div>
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent z-10"></div>
-          <img 
-            src="https://image.tmdb.org/t/p/original/rMvPXy8PUjj1o8o1pzgQbdNCsvj.jpg" 
-            alt="Cinema Background" 
-            className="w-full h-full object-cover"
-          />
+          < BeamsBackground />
         </div>
         <div className="relative z-20 text-center px-4 max-w-4xl mx-auto">
           <SparklesText text="Tu Cine Digital" />
