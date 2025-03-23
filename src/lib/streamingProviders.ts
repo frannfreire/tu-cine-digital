@@ -34,7 +34,7 @@ export const providerBaseUrls: ProviderUrlMap = {
   // SkyShowtime
   1773: "https://www.skyshowtime.com/search?term=",
   // Atresplayer
-  149: "https://www.atresplayer.com/buscador/?text=",
+  2357: "https://www.atresplayer.com/buscador/?text=",
   // RTVE Play
   541: "https://www.rtve.es/play/buscar/?q="
 };

@@ -7,7 +7,7 @@ import { supabase } from '../lib/supabase';
 import { FavoriteGenresSection } from '../components/FavoriteGenresSection';
 import { FavoriteGenresList } from '../components/FavoriteGenresList';
 import { getFavoriteMovies, removeFavoriteMovie } from '../lib/supabase';
-import { User, Film, Heart, Settings, LogOut, Clock, Trash2, X } from 'lucide-react';
+import { User, Film, Heart, Settings, LogOut, Clock, Trash2 } from 'lucide-react';
 import { SparklesText } from '@/components/ui/sparkles-text';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

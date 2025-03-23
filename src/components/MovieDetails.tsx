@@ -353,7 +353,7 @@ export function MovieDetails({ movie, onBack, onToggleFavorite }: MovieDetailsPr
                         {watchProviders.flatrate.map(provider => (
                           <a 
                             key={provider.provider_id}
-                            href={getDirectProviderUrl(provider.provider_id, provider.provider_name, movie.title, watchProviders.link)}
+                            href={getDirectProviderUrl(provider.provider_id, provider.provider_name, movie.title || '', watchProviders.link || '')}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="group"
@@ -380,7 +380,7 @@ export function MovieDetails({ movie, onBack, onToggleFavorite }: MovieDetailsPr
                         {watchProviders.rent.map(provider => (
                           <a 
                             key={provider.provider_id}
-                            href={getDirectProviderUrl(provider.provider_id, provider.provider_name, movie.title, watchProviders.link)}
+                            href={getDirectProviderUrl(provider.provider_id, provider.provider_name, movie.title || '', watchProviders.link || '')}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="group"
@@ -407,7 +407,7 @@ export function MovieDetails({ movie, onBack, onToggleFavorite }: MovieDetailsPr
                         {watchProviders.buy.map(provider => (
                           <a 
                             key={provider.provider_id}
-                            href={getDirectProviderUrl(provider.provider_id, provider.provider_name, movie.title, watchProviders.link)}
+                            href={getDirectProviderUrl(provider.provider_id, provider.provider_name, movie.title || '', watchProviders.link || '')}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="group"
