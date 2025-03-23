@@ -5,6 +5,7 @@ import { MovieGrid } from '@/components/MovieGrid';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
+import { PageSEO } from '@/components/PageSEO';
 
 export function AllMoviesPage() {
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -57,6 +58,8 @@ export function AllMoviesPage() {
   };
 
   return (
+    <>
+      <PageSEO path="/peliculas" />
     <div className="container mx-auto py-8 px-4">
       <Button 
         variant="outline" 
@@ -173,5 +176,6 @@ export function AllMoviesPage() {
         </CardContent>
       </Card>
     </div>
+    </>
   );
 }

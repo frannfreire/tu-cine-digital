@@ -194,3 +194,33 @@ export async function fetchTopRatedMovies(page = 1): Promise<{ results: Movie[];
   );
   return response.json();
 }
+
+// Interfaces para proveedores de streaming
+export interface WatchProvider {
+  logo_path: string;
+  provider_id: number;
+  provider_name: string;
+  display_priority: number;
+}
+
+export interface WatchProviders {
+  link: string;
+  flatrate?: WatchProvider[];
+  rent?: WatchProvider[];
+  buy?: WatchProvider[];
+}
+
+export interface WatchProvidersResponse {
+  id: number;
+  results: {
+    [country: string]: WatchProviders;
+  };
+}
+
+// Función para obtener proveedores de streaming de una película
+export async function fetchMovieWatchProviders(movieId: number): Promise<WatchProvidersResponse> {
+  const response = await fetch(
+    `${BASE_URL}/movie/${movieId}/watch/providers?api_key=${TMDB_API_KEY}`
+  );
+  return response.json();
+}

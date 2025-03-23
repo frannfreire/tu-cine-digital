@@ -5,6 +5,7 @@ import { fetchMovieDetails, MovieDetails as MovieDetailsType } from "./lib/tmdb"
 import { X } from "lucide-react";
 import { Button } from "./components/ui/button";
 import { useLocation } from "react-router-dom";
+import { PageSEO } from "./components/PageSEO";
 
 function App() {
   const [selectedMovie, setSelectedMovie] = useState<MovieDetailsType | null>(null);
@@ -39,6 +40,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-background relative">
+      <PageSEO path="/" />
       <MovieList onMovieSelect={handleMovieSelect} />
       
       {isLoading && (

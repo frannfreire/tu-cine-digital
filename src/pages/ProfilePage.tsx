@@ -6,11 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/componen
 import { supabase } from '../lib/supabase';
 import { FavoriteGenresSection } from '../components/FavoriteGenresSection';
 import { FavoriteGenresList } from '../components/FavoriteGenresList';
-import { getFavoriteMovies } from '../lib/supabase';
-import { User, Film, Heart, Settings, LogOut, Clock } from 'lucide-react';
+import { getFavoriteMovies, removeFavoriteMovie } from '../lib/supabase';
+import { User, Film, Heart, Settings, LogOut, Clock, Trash2, X } from 'lucide-react';
 import { SparklesText } from '@/components/ui/sparkles-text';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { getImageUrl, posterSizes } from '@/lib/tmdb';
 
 export function ProfilePage() {
   const { user, isLoading, signOut } = useAuth();
@@ -264,16 +265,48 @@ export function ProfilePage() {
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                       {favorites.map((movie) => (
                         <div 
-                          key={movie.id} 
-                          className="cursor-pointer hover:opacity-80 transition-opacity"
-                          onClick={() => navigate(`/?movieId=${movie.id}`)}
+                          key={movie.movie_id} 
+                          className="group relative cursor-pointer hover:opacity-90 transition-all duration-300"
                         >
-                          <img 
-                            src={movie.poster_path ? `https://image.tmdb.org/t/p/w342${movie.poster_path}` : '/placeholder-movie.jpg'} 
-                            alt={movie.title} 
-                            className="rounded-lg shadow-md w-full aspect-[2/3] object-cover"
-                          />
-                          <h3 className="mt-2 font-medium text-sm line-clamp-1">{movie.title}</h3>
+                          <div 
+                            className="rounded-lg shadow-md w-full aspect-[2/3] overflow-hidden"
+                            onClick={() => navigate(`/?movieId=${movie.movie_id}`)}
+                          >
+                            <img 
+                              src={movie.movie_data?.poster_path ? getImageUrl(movie.movie_data.poster_path, posterSizes.medium) : '/placeholder-movie.jpg'} 
+                              alt={movie.movie_data?.title} 
+                              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.src = "/placeholder-movie.jpg";
+                              }}
+                            />
+                          </div>
+                          <h3 className="mt-2 font-medium text-sm line-clamp-1">{movie.movie_data?.title}</h3>
+                          
+                          {/* Botón para eliminar de favoritos */}
+                          <button 
+                            onClick={async (e) => {
+                              e.stopPropagation();
+                              if (!user) return;
+                              
+                              try {
+                                const { error } = await removeFavoriteMovie(user.id, movie.movie_id);
+                                if (error) {
+                                  console.error('Error al eliminar de favoritos:', error);
+                                  return;
+                                }
+                                // Actualizar la lista de favoritos
+                                setFavorites(favorites.filter(fav => fav.movie_id !== movie.movie_id));
+                              } catch (err) {
+                                console.error('Error inesperado al eliminar favorito:', err);
+                              }
+                            }}
+                            className="absolute top-2 right-2 p-2 rounded-full bg-black/70 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-red-600"
+                            aria-label="Eliminar de favoritos"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </div>
                       ))}
                     </div>

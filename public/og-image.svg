@@ -1,0 +1,26 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo con gradiente -->
+  <rect width="1200" height="630" fill="url(#paint0_linear)" />
+  
+  <!-- Título -->
+  <text x="600" y="250" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="white" text-anchor="middle">Tu Cine Digital</text>
+  
+  <!-- Subtítulo -->
+  <text x="600" y="330" font-family="Arial, sans-serif" font-size="36" fill="#E0E0E0" text-anchor="middle">Descubre el fascinante mundo del cine</text>
+  
+  <!-- Iconos de película -->
+  <g transform="translate(400, 400)">
+    <rect x="0" y="0" width="80" height="60" rx="10" fill="#3B82F6" />
+    <rect x="100" y="0" width="80" height="60" rx="10" fill="#8B5CF6" />
+    <rect x="200" y="0" width="80" height="60" rx="10" fill="#EC4899" />
+    <rect x="300" y="0" width="80" height="60" rx="10" fill="#10B981" />
+  </g>
+  
+  <!-- Definición del gradiente -->
+  <defs>
+    <linearGradient id="paint0_linear" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0F172A" />
+      <stop offset="1" stop-color="#1E293B" />
+    </linearGradient>
+  </defs>
+</svg>

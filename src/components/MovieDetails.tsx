@@ -1,16 +1,31 @@
-import { MovieDetails as MovieDetailsType, getImageUrl, backdropSizes, posterSizes } from "@/lib/tmdb";
+import { MovieDetails as MovieDetailsType, getImageUrl, backdropSizes, posterSizes, fetchMovieWatchProviders, WatchProvider } from "@/lib/tmdb";
+import { getDirectProviderUrl } from "@/lib/streamingProviders";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { Clock, Calendar, Star, ArrowLeft, Heart, DollarSign, BookOpen } from "lucide-react"; // Removed 'Users'
+import { Clock, Calendar, Star, ArrowLeft, Heart, DollarSign, BookOpen, Monitor, ExternalLink } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { addFavoriteMovie, removeFavoriteMovie, getFavoriteMovies } from "@/lib/supabase";
 
 interface MovieDetailsProps {
   movie: MovieDetailsType;
   onBack: () => void;
+  onToggleFavorite?: (movieId: number, isFavorite: boolean) => void;
 }
 
-export function MovieDetails({ movie, onBack }: MovieDetailsProps) {
+export function MovieDetails({ movie, onBack, onToggleFavorite }: MovieDetailsProps) {
+  const { user } = useAuth();
+  const [watchProviders, setWatchProviders] = React.useState<{
+    flatrate?: WatchProvider[];
+    rent?: WatchProvider[];
+    buy?: WatchProvider[];
+    link?: string;
+  }>({});
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const releaseDate = movie.release_date 
     ? format(new Date(movie.release_date), "d 'de' MMMM, yyyy", { locale: es })
     : "Fecha desconocida";
@@ -29,6 +44,86 @@ export function MovieDetails({ movie, onBack }: MovieDetailsProps) {
       maximumFractionDigits: 0
     }).format(amount);
   };
+
+  // Verificar si la película está en favoritos
+  useEffect(() => {
+    const checkIfFavorite = async () => {
+      if (!user) return;
+      
+      try {
+        const { data, error } = await getFavoriteMovies(user.id);
+        if (error) {
+          console.error('Error al verificar favoritos:', error);
+          return;
+        }
+        
+        const isFav = data?.some((fav: any) => fav.movie_id === movie.id) || false;
+        setIsFavorite(isFav);
+      } catch (err) {
+        console.error('Error inesperado al verificar favoritos:', err);
+      }
+    };
+    
+    checkIfFavorite();
+  }, [user, movie.id]);
+  
+  // Función para manejar el toggle de favoritos
+  const handleToggleFavorite = async () => {
+    if (!user) return; // No hacer nada si no hay usuario autenticado
+    
+    setIsLoading(true);
+    try {
+      if (isFavorite) {
+        // Eliminar de favoritos
+        const { error } = await removeFavoriteMovie(user.id, movie.id);
+        if (error) {
+          console.error('Error al eliminar de favoritos:', error);
+          return;
+        }
+      } else {
+        // Añadir a favoritos
+        const { error } = await addFavoriteMovie(user.id, movie.id, movie);
+        if (error) {
+          console.error('Error al añadir a favoritos:', error);
+          return;
+        }
+      }
+      
+      // Actualizar estado local
+      const newFavoriteState = !isFavorite;
+      setIsFavorite(newFavoriteState);
+      
+      // Notificar al componente padre si existe la función
+      if (onToggleFavorite) {
+        onToggleFavorite(movie.id, newFavoriteState);
+      }
+    } catch (error) {
+      console.error('Error inesperado:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  // Cargar proveedores de streaming
+  React.useEffect(() => {
+    const loadWatchProviders = async () => {
+      try {
+        const providersData = await fetchMovieWatchProviders(movie.id);
+        // Usar ES como país por defecto, o US si no hay datos para ES
+        const providers = providersData.results?.ES || providersData.results?.US || {};
+        setWatchProviders({
+          flatrate: providers.flatrate,
+          rent: providers.rent,
+          buy: providers.buy,
+          link: providers.link
+        });
+      } catch (error) {
+        console.error("Error al cargar proveedores de streaming:", error);
+      }
+    };
+
+    loadWatchProviders();
+  }, [movie.id]);
 
   return (
     <div className="w-full max-w-6xl mx-auto">
@@ -54,6 +149,20 @@ export function MovieDetails({ movie, onBack }: MovieDetailsProps) {
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
+        
+        {/* Favorite Button */}
+        {user && (
+          <Button 
+            variant="outline" 
+            size="icon"
+            onClick={handleToggleFavorite}
+            disabled={isLoading}
+            className={`absolute top-6 right-6 z-20 ${isFavorite ? 'bg-primary hover:bg-primary/90' : 'bg-black/30 hover:bg-black/50'} text-white border-white/20 rounded-full`}
+            aria-label={isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos'}
+          >
+            <Heart className={`h-4 w-4 ${isFavorite ? 'fill-current' : ''}`} />
+          </Button>
+        )}
         
         {/* Movie Info Overlay */}
         <div className="absolute bottom-0 left-0 right-0 p-8 z-20 flex gap-8 items-end">
@@ -223,6 +332,116 @@ export function MovieDetails({ movie, onBack }: MovieDetailsProps) {
             </CardContent>
           </Card>
 
+          {/* Plataformas de Streaming */}
+          <Card className="border border-border/30 bg-card shadow-md">
+            <div className="bg-primary/10 py-4 px-6 border-b border-border/20">
+              <h2 className="text-xl font-bold flex items-center gap-2">
+                <Monitor className="h-5 w-5 text-primary" />
+                Dónde Ver
+              </h2>
+            </div>
+            <CardContent className="p-6">
+              {(!watchProviders.flatrate && !watchProviders.rent && !watchProviders.buy) ? (
+                <p className="text-muted-foreground text-center py-2">No hay información disponible sobre plataformas de streaming para esta película.</p>
+              ) : (
+                <div className="space-y-6">
+                  {/* Streaming */}
+                  {watchProviders.flatrate && watchProviders.flatrate.length > 0 && (
+                    <div>
+                      <h3 className="text-sm font-medium text-muted-foreground mb-3">Streaming</h3>
+                      <div className="flex flex-wrap gap-3">
+                        {watchProviders.flatrate.map(provider => (
+                          <a 
+                            key={provider.provider_id}
+                            href={getDirectProviderUrl(provider.provider_id, provider.provider_name, movie.title, watchProviders.link)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group"
+                          >
+                            <div className="w-12 h-12 rounded-lg overflow-hidden border-2 border-transparent group-hover:border-primary transition-all duration-300 shadow-md">
+                              <img 
+                                src={getImageUrl(provider.logo_path, posterSizes.small)}
+                                alt={provider.provider_name}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            <p className="text-xs text-center mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">{provider.provider_name}</p>
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Alquiler */}
+                  {watchProviders.rent && watchProviders.rent.length > 0 && (
+                    <div>
+                      <h3 className="text-sm font-medium text-muted-foreground mb-3">Alquiler</h3>
+                      <div className="flex flex-wrap gap-3">
+                        {watchProviders.rent.map(provider => (
+                          <a 
+                            key={provider.provider_id}
+                            href={getDirectProviderUrl(provider.provider_id, provider.provider_name, movie.title, watchProviders.link)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group"
+                          >
+                            <div className="w-12 h-12 rounded-lg overflow-hidden border-2 border-transparent group-hover:border-primary transition-all duration-300 shadow-md">
+                              <img 
+                                src={getImageUrl(provider.logo_path, posterSizes.small)}
+                                alt={provider.provider_name}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            <p className="text-xs text-center mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">{provider.provider_name}</p>
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Compra */}
+                  {watchProviders.buy && watchProviders.buy.length > 0 && (
+                    <div>
+                      <h3 className="text-sm font-medium text-muted-foreground mb-3">Compra</h3>
+                      <div className="flex flex-wrap gap-3">
+                        {watchProviders.buy.map(provider => (
+                          <a 
+                            key={provider.provider_id}
+                            href={getDirectProviderUrl(provider.provider_id, provider.provider_name, movie.title, watchProviders.link)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group"
+                          >
+                            <div className="w-12 h-12 rounded-lg overflow-hidden border-2 border-transparent group-hover:border-primary transition-all duration-300 shadow-md">
+                              <img 
+                                src={getImageUrl(provider.logo_path, posterSizes.small)}
+                                alt={provider.provider_name}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            <p className="text-xs text-center mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">{provider.provider_name}</p>
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {watchProviders.link && (
+                    <a 
+                      href={watchProviders.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors mt-4"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                      Ver todas las opciones disponibles
+                    </a>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+          
           {/* Información de producción */}
           {movie.production_companies?.length > 0 && (
             <Card className="border border-border/30 bg-card shadow-md">
