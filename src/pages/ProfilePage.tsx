@@ -239,6 +239,47 @@ export function ProfilePage() {
           {/* Sección de favoritos */}
           {activeSection === 'favoritos' && (
             <div className="space-y-6">
+              <Card className="shadow-lg border-primary/10 overflow-hidden hover:shadow-xl transition-all duration-300">
+                <CardHeader className="pb-3 bg-gradient-to-r from-blue-50 to-purple-50">
+                  <CardTitle className="text-lg font-bold text-gray-800">Tus Favoritos</CardTitle>
+                </CardHeader>
+                <CardContent className="p-6">
+                  {isLoadingFavorites ? (
+                    <div className="animate-pulse space-y-4">
+                      <div className="h-8 bg-muted rounded-md w-3/4"></div>
+                      <div className="h-64 bg-muted rounded-md"></div>
+                    </div>
+                  ) : favorites.length === 0 ? (
+                    <div className="text-center py-8">
+                      <p className="text-muted-foreground">No tienes películas favoritas aún.</p>
+                      <Button 
+                        variant="outline" 
+                        className="mt-4"
+                        onClick={() => navigate('/')}
+                      >
+                        Explorar películas
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                      {favorites.map((movie) => (
+                        <div 
+                          key={movie.id} 
+                          className="cursor-pointer hover:opacity-80 transition-opacity"
+                          onClick={() => navigate(`/?movieId=${movie.id}`)}
+                        >
+                          <img 
+                            src={movie.poster_path ? `https://image.tmdb.org/t/p/w342${movie.poster_path}` : '/placeholder-movie.jpg'} 
+                            alt={movie.title} 
+                            className="rounded-lg shadow-md w-full aspect-[2/3] object-cover"
+                          />
+                          <h3 className="mt-2 font-medium text-sm line-clamp-1">{movie.title}</h3>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
               <FavoriteGenresList userId={user?.id} />
               <FavoriteGenresSection userId={user?.id} />
             </div>

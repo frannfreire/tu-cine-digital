@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Movie, fetchPopularMovies, fetchTrendingMovies, getImageUrl } from '@/lib/tmdb';
+import { Movie, fetchPopularMovies, fetchTrendingMovies } from '@/lib/tmdb';
 import { MovieGrid } from '@/components/MovieGrid';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

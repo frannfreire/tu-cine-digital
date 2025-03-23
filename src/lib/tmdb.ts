@@ -103,7 +103,7 @@ export async function fetchPopularMovies(page = 1): Promise<{ results: Movie[]; 
   return response.json();
 }
 
-export async function fetchTrendingMovies(timeWindow: "day" | "week" = "week"): Promise<{ results: Movie[] }> {
+export async function fetchTrendingMovies(timeWindow: "day" | "week" = "week"): Promise<{ results: Movie[]; total_pages: number }> {
   const response = await fetch(
     `${BASE_URL}/trending/movie/${timeWindow}?api_key=${TMDB_API_KEY}&language=es-ES`
   );
