@@ -2,16 +2,18 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { supabase } from '../lib/supabase';
 import { FavoriteGenresSection } from '../components/FavoriteGenresSection';
 import { FavoriteGenresList } from '../components/FavoriteGenresList';
 import { getFavoriteMovies } from '../lib/supabase';
-import { CheckCircle } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { User, Film, Heart, Settings, LogOut, Clock } from 'lucide-react';
+import { SparklesText } from '@/components/ui/sparkles-text';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export function ProfilePage() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, signOut } = useAuth();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
@@ -19,6 +21,7 @@ export function ProfilePage() {
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [favorites, setFavorites] = useState<any[]>([]);
   const [isLoadingFavorites, setIsLoadingFavorites] = useState(false);
+  const [activeSection, setActiveSection] = useState('perfil');
   const navigate = useNavigate();
 
   // Redirigir si no hay usuario autenticado
@@ -95,148 +98,177 @@ export function ProfilePage() {
   }
 
   return (
-    <div className="container mx-auto py-10 flex flex-col gap-8 min-h-[calc(100vh-4rem)]">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-1">
-          <Card className="w-full shadow-lg border-primary/20 sticky top-4">
-            <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-t-lg">
-              <CardTitle className="text-2xl bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
-                Tu Perfil
-              </CardTitle>
-              <CardDescription>
-                Administra tu información personal
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleUpdateProfile} className="space-y-4">
-                <div className="space-y-2">
-                  <label htmlFor="fullName" className="text-sm font-medium">
-                    Nombre completo
-                  </label>
-                  <input
-                    id="fullName"
-                    type="text"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    required
-                    className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="Tu nombre completo"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="email" className="text-sm font-medium">
-                    Correo electrónico
-                  </label>
-                  <input
-                    id="email"
-                    type="email"
-                    value={email}
-                    disabled
-                    className="w-full p-2 border rounded-md bg-muted"
-                  />
-                  <p className="text-xs text-muted-foreground">El correo electrónico no se puede cambiar</p>
-                </div>
-                {updateError && (
-                  <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-md text-sm">
-                    {updateError}
-                  </div>
-                )}
-                {updateSuccess && (
-                  <div className="p-3 bg-green-50 border border-green-200 text-green-700 rounded-md text-sm flex items-center">
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                    Perfil actualizado correctamente
-                  </div>
-                )}
-                <Button
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
-                  disabled={isUpdating}
-                >
-                  {isUpdating ? (
-                    <span className="flex items-center justify-center">
-                      <span className="animate-spin mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
-                      Actualizando...
-                    </span>
-                  ) : 'Actualizar perfil'}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-        
-        <div className="lg:col-span-2">
-          <FavoriteGenresList userId={user?.id} />
-          <FavoriteGenresSection userId={user?.id} />
-        </div>
+    <div className="container mx-auto py-10 px-4 min-h-[calc(100vh-4rem)]">
+      {/* Encabezado del Dashboard */}
+      <div className="mb-10 max-w-3xl mx-auto lg:mx-0">
+        <SparklesText 
+          text="Tu Dashboard de Cine" 
+          className="text-4xl md:text-5xl mb-4 text-center lg:text-left font-bold"
+          colors={{ first: "#3b82f6", second: "#8b5cf6" }}
+        />
+        <p className="text-muted-foreground text-center lg:text-left text-lg">Bienvenido de nuevo, <span className="font-medium text-foreground">{fullName || 'Cinéfilo'}</span>. Gestiona tu perfil y descubre tus estadísticas.</p>
       </div>
 
-      <Card className="w-full max-w-4xl mx-auto shadow-lg border-primary/20 mt-8">
-        <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-t-lg">
-          <CardTitle className="text-2xl bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
-            Tus Películas Favoritas
-          </CardTitle>
-          <CardDescription>
-            Películas que has marcado como favoritas
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="pt-6">
-          {isLoadingFavorites ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="h-64 bg-muted rounded-md animate-pulse"></div>
-              ))}
-            </div>
-          ) : favorites.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {favorites.map((favorite, index) => (
-                <motion.div
-                  key={favorite.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ 
-                    opacity: 1, 
-                    y: 0,
-                    transition: { delay: index * 0.05 }
+      {/* Dashboard Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Sidebar - Perfil y Navegación */}
+        <div className="lg:col-span-3">
+          <div className="space-y-6 sticky top-6">
+            {/* Tarjeta de Perfil */}
+            <Card className="shadow-lg border-primary/10 overflow-hidden hover:shadow-xl transition-all duration-300">
+              <div className="px-6 pb-6 pt-0 relative">
+                <div className="mt-8 text-center">
+                  <h3 className="text-xl font-bold">{fullName || 'Usuario'}</h3>
+                  <p className="text-muted-foreground text-sm mt-1">{email}</p>
+                </div>
+              </div>
+              <CardFooter className="border-t bg-muted/50 flex justify-between py-4 px-6">
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground transition-colors duration-200">
+                  <Settings size={16} className="mr-2" /> Ajustes
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-muted-foreground hover:text-destructive transition-colors duration-200"
+                  onClick={async () => {
+                    await signOut();
+                    navigate('/login');
                   }}
                 >
-                  <Card className="overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 h-full">
-                    {favorite.movie_data?.poster_path ? (
-                      <img 
-                        src={`https://image.tmdb.org/t/p/w500${favorite.movie_data.poster_path}`}
-                        alt={favorite.movie_data.title}
-                        className="w-full h-48 object-cover transition-transform duration-300 hover:scale-105"
-                      />
-                    ) : (
-                      <div className="w-full h-48 bg-muted flex items-center justify-center">
-                        <span className="text-muted-foreground">Sin imagen</span>
-                      </div>
-                    )}
-                    <CardContent className="p-4">
-                      <h3 className="font-semibold truncate">{favorite.movie_data?.title}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {favorite.movie_data?.release_date?.substring(0, 4)}
-                      </p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          ) : (
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-8"
-            >
-              <p className="text-muted-foreground mb-4">No tienes películas favoritas</p>
-              <Button 
-                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
-                onClick={() => navigate('/')}
-              >
-                Explorar películas
-              </Button>
-            </motion.div>
+                  <LogOut size={16} className="mr-2" /> Salir
+                </Button>
+              </CardFooter>
+            </Card>
+
+            {/* Menú de Navegación */}
+            <Card className="shadow-lg border-primary/10 overflow-hidden hover:shadow-xl transition-all duration-300">
+              <CardHeader className="pb-3 bg-gradient-to-r from-blue-50 to-purple-50">
+                <CardTitle className="text-lg font-bold text-gray-800">Navegación</CardTitle>
+              </CardHeader>
+              <CardContent className="grid gap-0.5 p-0">
+                <Button 
+                  variant="ghost" 
+                  className={`justify-start pl-6 py-5 rounded-none border-l-2 ${activeSection === 'perfil' ? 'border-primary bg-blue-50/50 text-primary font-medium' : 'border-transparent hover:border-primary/70 hover:bg-blue-50/30'} transition-all duration-200`}
+                  onClick={() => setActiveSection('perfil')}
+                >
+                  <User size={18} className="mr-3" /> Perfil
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  className={`justify-start pl-6 py-5 rounded-none border-l-2 ${activeSection === 'favoritos' ? 'border-primary bg-blue-50/50 text-primary font-medium' : 'border-transparent hover:border-primary/70 hover:bg-blue-50/30'} transition-all duration-200`}
+                  onClick={() => setActiveSection('favoritos')}
+                >
+                  <Heart size={18} className="mr-3" /> Favoritos
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  className={`justify-start pl-6 py-5 rounded-none border-l-2 ${activeSection === 'recomendaciones' ? 'border-primary bg-blue-50/50 text-primary font-medium' : 'border-transparent hover:border-primary/70 hover:bg-blue-50/30'} transition-all duration-200`}
+                  onClick={() => setActiveSection('recomendaciones')}
+                >
+                  <Film size={18} className="mr-3" /> Recomendaciones
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  className={`justify-start pl-6 py-5 rounded-none border-l-2 ${activeSection === 'historial' ? 'border-primary bg-blue-50/50 text-primary font-medium' : 'border-transparent hover:border-primary/70 hover:bg-blue-50/30'} transition-all duration-200`}
+                  onClick={() => setActiveSection('historial')}
+                >
+                  <Clock size={18} className="mr-3" /> Historial
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+        
+        {/* Contenido principal */}
+        <div className="lg:col-span-9">
+          {/* Sección de perfil */}
+          {activeSection === 'perfil' && (
+            <Card className="shadow-lg border-primary/10 overflow-hidden hover:shadow-xl transition-all duration-300">
+              <CardHeader className="pb-3 bg-gradient-to-r from-blue-50 to-purple-50">
+                <CardTitle className="text-lg font-bold text-gray-800">Tu Perfil</CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                <form onSubmit={handleUpdateProfile} className="space-y-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="fullName">Nombre completo</Label>
+                    <Input
+                      id="fullName"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      placeholder="Tu nombre completo"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Correo electrónico</Label>
+                    <Input
+                      id="email"
+                      value={email}
+                      disabled
+                      className="bg-muted/50"
+                    />
+                  </div>
+                  
+                  {updateError && (
+                    <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-md text-sm">
+                      {updateError}
+                    </div>
+                  )}
+                  
+                  {updateSuccess && (
+                    <div className="p-3 bg-green-50 border border-green-200 text-green-700 rounded-md text-sm flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      Perfil actualizado correctamente
+                    </div>
+                  )}
+                  
+                  <Button 
+                    type="submit" 
+                    disabled={isUpdating}
+                    className="w-full md:w-auto bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-md"
+                  >
+                    {isUpdating ? 'Actualizando...' : 'Actualizar perfil'}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
           )}
-        </CardContent>
-      </Card>
+          
+          {/* Sección de favoritos */}
+          {activeSection === 'favoritos' && (
+            <div className="space-y-6">
+              <FavoriteGenresList userId={user?.id} />
+              <FavoriteGenresSection userId={user?.id} />
+            </div>
+          )}
+          
+          {/* Sección de recomendaciones */}
+          {activeSection === 'recomendaciones' && (
+            <Card className="shadow-lg border-primary/10 overflow-hidden hover:shadow-xl transition-all duration-300">
+              <CardHeader className="pb-3 bg-gradient-to-r from-blue-50 to-purple-50">
+                <CardTitle className="text-lg font-bold text-gray-800">Tus Recomendaciones</CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                <p className="text-muted-foreground">Basado en tus géneros favoritos, te recomendamos estas películas.</p>
+              </CardContent>
+            </Card>
+          )}
+          
+          {/* Sección de historial */}
+          {activeSection === 'historial' && (
+            <Card className="shadow-lg border-primary/10 overflow-hidden hover:shadow-xl transition-all duration-300">
+              <CardHeader className="pb-3 bg-gradient-to-r from-blue-50 to-purple-50">
+                <CardTitle className="text-lg font-bold text-gray-800">Tu Historial</CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                <p className="text-muted-foreground">Aquí podrás ver tu historial de películas vistas.</p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

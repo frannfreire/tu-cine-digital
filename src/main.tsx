@@ -8,6 +8,7 @@ import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { ProfilePage } from './pages/ProfilePage'
 import { RecommendationsPage } from './pages/RecommendationsPage'
+import { AllMoviesPage } from './pages/AllMoviesPage'
 import { Navbar } from './components/Navbar'
 
 createRoot(document.getElementById('root')!).render(
@@ -21,6 +22,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/registro" element={<RegisterPage />} />
           <Route path="/perfil" element={<ProfilePage />} />
           <Route path="/recomendaciones" element={<RecommendationsPage />} />
+          <Route path="/peliculas" element={<AllMoviesPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>

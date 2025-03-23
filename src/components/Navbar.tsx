@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from './ui/button';
 import { LogIn, LogOut, User as UserIcon } from 'lucide-react';
+import logo from '../assets/logo.png';
 
 export function Navbar() {
   const { user, signOut, isLoading } = useAuth();
@@ -13,7 +14,9 @@ export function Navbar() {
   return (
     <nav className="bg-card shadow-md py-4">
       <div className="container mx-auto px-4 flex justify-between items-center">
-        <Link to="/" className="text-xl font-bold">Tu Cine Digital</Link>
+        <Link to="/" className="flex items-center gap-2">
+          <img src={logo} alt="Tu Cine Digital" className="h-10 w-auto" />
+        </Link>
         
         <div className="flex items-center gap-4">
           {isLoading ? (

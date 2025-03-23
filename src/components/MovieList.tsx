@@ -3,6 +3,7 @@ import { fetchPopularMovies, fetchTrendingMovies, searchMovies, getImageUrl, pos
 import { Search, Star, Film, TrendingUp } from "lucide-react";
 import { MovieGridSkeleton } from "@/components/MovieGridSkeleton";
 import { RecommendedMovies } from "@/components/RecommendedMovies";
+import { SparklesText } from "@/components/ui/sparkles-text"
 
 interface MovieListProps {
   onMovieSelect: (movieId: number) => void;
@@ -64,10 +65,8 @@ export function MovieList({ onMovieSelect }: MovieListProps) {
           />
         </div>
         <div className="relative z-20 text-center px-4 max-w-4xl mx-auto">
-          <h1 className="text-5xl md:text-7xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">
-            Tu Cine Digital
-          </h1>
-          <p className="text-xl md:text-2xl mb-8 text-gray-300">
+          <SparklesText text="Tu Cine Digital" />
+          <p className="text-xl md:text-2xl mb-8 text-gray-300 mt-6">
             Descubre el fascinante mundo del cine con nuestra colección de películas
           </p>
           
