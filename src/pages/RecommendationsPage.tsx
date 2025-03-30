@@ -7,6 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
+import { useMovieDetails } from '@/contexts/MovieDetailsContext';
+import { MovieDetailsModal } from '@/components/MovieDetailsModal';
 
 export function RecommendationsPage() {
   const { user } = useAuth();
@@ -56,17 +58,16 @@ export function RecommendationsPage() {
     }
   }, [isLoading, user, hasGenres, navigate]);
 
-  const handleMovieSelect = (movieId: number) => {
-    // Navegar a la página principal con el ID de la película seleccionada
-    navigate(`/?movieId=${movieId}`);
-  };
+  const { handleMovieSelect } = useMovieDetails();
 
   const handleBack = () => {
     navigate('/');
   };
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <>
+      <MovieDetailsModal />
+      <div className="container mx-auto py-8 px-4">
       <Button 
         variant="outline" 
         className="mb-6 flex items-center gap-2 bg-black/30 text-white hover:bg-black/50 border-none"
@@ -92,5 +93,6 @@ export function RecommendationsPage() {
         </CardContent>
       </Card>
     </div>
+    </>
   );
 }

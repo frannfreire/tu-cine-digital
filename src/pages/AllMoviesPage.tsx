@@ -6,6 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
 import { PageSEO } from '@/components/PageSEO';
+import { useMovieDetails } from '@/contexts/MovieDetailsContext';
+import { MovieDetailsModal } from '@/components/MovieDetailsModal';
 
 export function AllMoviesPage() {
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -40,10 +42,8 @@ export function AllMoviesPage() {
     loadMovies();
   }, [movieType, currentPage]);
 
-  const handleMovieSelect = (movieId: number) => {
-    // Navegar a la página principal con el ID de la película seleccionada
-    navigate(`/?movieId=${movieId}`);
-  };
+  const { handleMovieSelect } = useMovieDetails();
+
 
   const handleBack = () => {
     navigate('/');
@@ -58,9 +58,10 @@ export function AllMoviesPage() {
   };
 
   return (
-    <>
+    <div className="min-h-screen bg-gradient-to-b from-black to-slate-900 text-white flex flex-col">
       <PageSEO path="/peliculas" />
-    <div className="container mx-auto py-8 px-4">
+      <MovieDetailsModal />
+      <div className="container mx-auto py-8 px-4 flex-grow">
       <Button 
         variant="outline" 
         className="mb-6 flex items-center gap-2 bg-black/30 text-white hover:bg-black/50 border-none"
@@ -175,7 +176,7 @@ export function AllMoviesPage() {
           )}
         </CardContent>
       </Card>
+      </div>
     </div>
-    </>
   );
 }

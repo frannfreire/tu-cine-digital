@@ -6,12 +6,10 @@ import { MovieGrid } from './MovieGrid';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { useNavigate } from 'react-router-dom';
+import { useMovieDetails } from '@/contexts/MovieDetailsContext';
 
-interface RecommendedMoviesProps {
-  onMovieSelect: (movieId: number) => void;
-}
-
-export function RecommendedMovies({ onMovieSelect }: RecommendedMoviesProps) {
+export function RecommendedMovies() {
+  const { handleMovieSelect } = useMovieDetails();
   const { user } = useAuth();
   const [movies, setMovies] = useState<Movie[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -76,7 +74,7 @@ export function RecommendedMovies({ onMovieSelect }: RecommendedMoviesProps) {
         <MovieGrid 
           movies={displayedMovies} 
           isLoading={isLoading} 
-          onMovieClick={(movie) => onMovieSelect(movie.id)}
+          onMovieClick={(movie) => handleMovieSelect(movie.id)}
         />
         
         {movies.length > 5 && (

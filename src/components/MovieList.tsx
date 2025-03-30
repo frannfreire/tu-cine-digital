@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
 import { fetchPopularMovies, fetchTrendingMovies, searchMovies, getImageUrl, posterSizes, Movie } from "../lib/tmdb";
-import { Search, Star, Film, TrendingUp } from "lucide-react";
+import { Search, Star, Film, TrendingUp, ArrowRight } from "lucide-react";
 import { MovieGridSkeleton } from "@/components/MovieGridSkeleton";
 import { RecommendedMovies } from "@/components/RecommendedMovies";
 import { SparklesText } from "@/components/ui/sparkles-text"
-import { BeamsBackground } from "@/components/ui/beams-background"
+import { Link } from "react-router-dom";
+import { useMovieDetails } from "@/contexts/MovieDetailsContext";
+import { MovieDetailsModal } from "@/components/MovieDetailsModal";
+import { WavyBackground } from "@/components/ui/wavy-background";
 
-interface MovieListProps {
-  onMovieSelect: (movieId: number) => void;
-}
-
-export function MovieList({ onMovieSelect }: MovieListProps) {
+export function MovieList() {
+  const { handleMovieSelect } = useMovieDetails();
   const [searchQuery, setSearchQuery] = useState("");
   const [movies, setMovies] = useState<Movie[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -54,12 +54,13 @@ export function MovieList({ onMovieSelect }: MovieListProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-black to-slate-900 text-white">
+      <MovieDetailsModal />
       {/* Hero Section */}
       <div className="relative h-[50vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-black/60 z-10"></div>
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent z-10"></div>
-          < BeamsBackground />
+          <WavyBackground/>
         </div>
         <div className="relative z-20 text-center px-4 max-w-4xl mx-auto">
           <SparklesText text="Tu Cine Digital" />
@@ -92,7 +93,7 @@ export function MovieList({ onMovieSelect }: MovieListProps) {
       {/* Content Section */}
       <div className="container mx-auto px-4 py-12 -mt-16 relative z-20">
         {/* Recommended Movies Section */}
-        <RecommendedMovies onMovieSelect={onMovieSelect} />
+        <RecommendedMovies />
         
         {/* Tabs */}
         <div className="flex justify-center mb-12 mt-12">
@@ -129,38 +130,50 @@ export function MovieList({ onMovieSelect }: MovieListProps) {
             <p className="text-xl">No se encontraron películas</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-            {movies.map((movie) => (
-              <div 
-                key={movie.id} 
-                className="group relative overflow-hidden rounded-xl cursor-pointer transform transition-all duration-300 hover:scale-105 hover:z-10"
-                onClick={() => onMovieSelect(movie.id)}
-              >
-                <div className="aspect-[2/3] relative">
-                  <img
-                    src={movie.poster_path ? getImageUrl(movie.poster_path, posterSizes.medium) : "/placeholder-movie.jpg"}
-                    alt={movie.title}
-                    className="w-full h-full object-cover rounded-xl"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = "/placeholder-movie.jpg";
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded-md text-xs flex items-center backdrop-blur-sm">
-                    <Star className="h-3 w-3 mr-1 text-yellow-400" />
-                    {movie.vote_average.toFixed(1)}
+          <>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+              {movies.map((movie) => (
+                <div 
+                  key={movie.id} 
+                  className="group relative overflow-hidden rounded-xl cursor-pointer transform transition-all duration-300 hover:scale-105 hover:z-10"
+                  onClick={() => handleMovieSelect(movie.id)}
+                >
+                  <div className="aspect-[2/3] relative">
+                    <img
+                      src={movie.poster_path ? getImageUrl(movie.poster_path, posterSizes.medium) : "/placeholder-movie.jpg"}
+                      alt={movie.title}
+                      className="w-full h-full object-cover rounded-xl"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "/placeholder-movie.jpg";
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded-md text-xs flex items-center backdrop-blur-sm">
+                      <Star className="h-3 w-3 mr-1 text-yellow-400" />
+                      {movie.vote_average.toFixed(1)}
+                    </div>
+                  </div>
+                  <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-0 group-hover:translate-y-0 transition-transform">
+                    <h3 className="font-bold text-white line-clamp-2 text-shadow">{movie.title}</h3>
+                    <p className="text-sm text-gray-300 mt-1">
+                      {movie.release_date?.split('-')[0] || 'Sin fecha'}
+                    </p>
                   </div>
                 </div>
-                <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-0 group-hover:translate-y-0 transition-transform">
-                  <h3 className="font-bold text-white line-clamp-2 text-shadow">{movie.title}</h3>
-                  <p className="text-sm text-gray-300 mt-1">
-                    {movie.release_date?.split('-')[0] || 'Sin fecha'}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+            
+            {/* Botón para ver todas las películas */}
+            <div className="flex justify-center mt-12">
+              <Link 
+                to={`/peliculas?type=${activeTab}`}
+                className="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full font-medium hover:opacity-90 transition-opacity text-white flex items-center gap-2"
+              >
+                Ver todas las películas <ArrowRight className="h-4 w-4 ml-2" />
+              </Link>
+            </div>
+          </>
         )}
       </div>
     </div>
