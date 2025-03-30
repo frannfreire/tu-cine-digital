@@ -1,10 +1,23 @@
 import { SEO } from './SEO';
 
-type PageSEOProps = {
+export type PageSEOProps = {
   path: string;
+  title?: string;
+  description?: string;
 };
 
-export function PageSEO({ path }: PageSEOProps) {
+export function PageSEO({ path, title: customTitle, description: customDescription }: PageSEOProps) {
+  // Si se proporcionan título y descripción personalizados, los usamos directamente
+  if (customTitle && customDescription) {
+    return (
+      <SEO 
+        title={customTitle}
+        description={customDescription}
+        canonical={`https://tucine.digital${path}`}
+      />
+    );
+  }
+  
   // Configuración SEO específica para cada página
   switch (path) {
     case '/':
